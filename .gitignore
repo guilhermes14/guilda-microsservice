@@ -1,0 +1,16 @@
+# Maven
+*/target/
+*/.mvn/
+*/mvnw
+*/mvnw.cmd
+
+# IntelliJ
+**/.idea/
+**/*.iml
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
