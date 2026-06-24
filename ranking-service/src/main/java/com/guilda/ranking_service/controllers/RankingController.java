@@ -1,5 +1,6 @@
 package com.guilda.ranking_service.controllers;
 
+import com.guilda.ranking_service.client.dto.RankingAventureiroDTO;
 import com.guilda.ranking_service.models.RankingEntryModel;
 import com.guilda.ranking_service.services.RankingService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,11 @@ import java.util.List;
 public class RankingController {
 
     private final RankingService rankingService;
+
+    @GetMapping("/completo")
+    public ResponseEntity<List<RankingAventureiroDTO>> listarCompleto() {
+        return ResponseEntity.ok(rankingService.listarRankingCompleto());
+    }
 
     @PostMapping("/pontuar")
     public ResponseEntity<RankingEntryModel> pontuar(
