@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: ranking
     ports:
       - "5434:5432"
+    volumes:
+      - ranking-data:/var/lib/postgresql/data
 
   eureka-server:
     build: ./eureka-server
@@ -60,3 +62,6 @@ services:
       SPRING_CLOUD_CONFIG_ENABLED: false
     depends_on:
       - eureka-server
+
+volumes:
+  ranking-data:
