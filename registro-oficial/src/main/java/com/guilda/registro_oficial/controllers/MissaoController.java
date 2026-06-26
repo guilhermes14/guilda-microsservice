@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,8 @@ public class MissaoController {
 
     @PostMapping
     public ResponseEntity<MissaoModel> criar(@RequestBody @Valid MissaoModel missao) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(missaoService.criar(missao));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(missaoService.criar(missao));
     }
 
     @GetMapping
@@ -35,6 +37,16 @@ public class MissaoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<MissaoModel> atualizar(@PathVariable Long id,
+                                            @RequestBody @Valid MissaoModel dados) {
+        try {
+            return ResponseEntity.ok(missaoService.atualizar(id, dados));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/{missaoId}/participantes/{aventureiroId}")
     public ResponseEntity<ParticipacaoMissaoModel> adicionarParticipante(
             @PathVariable Long missaoId,
@@ -45,6 +57,16 @@ public class MissaoController {
                     .body(missaoService.adicionarParticipante(missaoId, aventureiroId, papel));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        try {
+            missaoService.deletar(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

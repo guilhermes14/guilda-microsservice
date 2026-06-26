@@ -18,12 +18,20 @@ spring:
                 - Path=/guilda-app/**
               filters:
                 - StripPrefix=1
+                - name: CircuitBreaker
+                  args:
+                    name: guilda-app
+                    fallbackUri: forward:/fallback/guilda-app
             - id: ranking-service
               uri: lb://RANKING-SERVICE
               predicates:
                 - Path=/ranking-service/**
               filters:
                 - StripPrefix=1
+                - name: CircuitBreaker
+                  args:
+                    name: ranking-service
+                    fallbackUri: forward:/fallback/ranking-service
 
 server:
   port: 8080
@@ -40,8 +48,3 @@ management:
     web:
       exposure:
         include: "*"
-
-logging:
-  level:
-    org.springframework.cloud.gateway: TRACE
-    reactor.netty: DEBUG

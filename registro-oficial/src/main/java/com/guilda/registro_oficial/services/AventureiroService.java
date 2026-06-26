@@ -1,12 +1,16 @@
 package com.guilda.registro_oficial.services;
 
 import com.guilda.registro_oficial.models.aventureiros.AventureiroModel;
+import com.guilda.registro_oficial.models.aventureiros.CompanheiroModel;
 import com.guilda.registro_oficial.repositories.AventureiroRepository;
 import com.guilda.registro_oficial.repositories.OrganizacaoRepository;
 import com.guilda.registro_oficial.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,14 +23,21 @@ public class AventureiroService {
     private final UsuarioRepository usuarioRepository;
 
     public AventureiroModel criar(AventureiroModel aventureiro) {
+        aventureiro.setAtivo(true);
+        aventureiro.setDataCriacao(LocalDateTime.now());
+        aventureiro.setDataAtualizacao(LocalDateTime.now());
         return aventureiroRepository.save(aventureiro);
     }
 
+    public Page<AventureiroModel> listar(String classe, Boolean ativo, Integer nivelMinimo, Pageable pageable) {
+        return aventureiroRepository.filtrar(classe, ativo, nivelMinimo, pageable);
+    }
     public List<AventureiroModel> listarTodos() {
         return aventureiroRepository.findAll();
     }
 
     public Optional<AventureiroModel> buscarPorId(Long id) {
+
         return aventureiroRepository.findById(id);
     }
 
@@ -36,6 +47,7 @@ public class AventureiroService {
         aventureiro.setNome(dados.getNome());
         aventureiro.setClasse(dados.getClasse());
         aventureiro.setNivel(dados.getNivel());
+        aventureiro.setDataAtualizacao(LocalDateTime.now());
         return aventureiroRepository.save(aventureiro);
     }
 
@@ -52,4 +64,20 @@ public class AventureiroService {
         aventureiro.setAtivo(true);
         aventureiroRepository.save(aventureiro);
     }
+
+    public AventureiroModel definirCompanheiro(Long id, CompanheiroModel companheiro) {
+        AventureiroModel aventureiro = aventureiroRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Aventureiro não encontrado"));
+        companheiro.setAventureiro(aventureiro);
+        aventureiro.setCompanheiro(companheiro);
+        return aventureiroRepository.save(aventureiro);
+    }
+
+    public void removerCompanheiro(Long id) {
+        AventureiroModel aventureiro = aventureiroRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Aventureiro não encontrado"));
+        aventureiro.setCompanheiro(null);
+        aventureiroRepository.save(aventureiro);
+    }
+
 }

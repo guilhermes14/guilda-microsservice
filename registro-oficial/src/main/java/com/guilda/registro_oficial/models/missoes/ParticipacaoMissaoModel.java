@@ -39,4 +39,5 @@ public class ParticipacaoMissaoModel {
 
     @Column(name = "data_registro", nullable = false, updatable = false)
     private LocalDateTime dataRegistro;
+
 }

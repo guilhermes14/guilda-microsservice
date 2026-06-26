@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface RankingClient {
 
     @PostMapping("/ranking/pontuar")
-    RankingResponse pontuar(@RequestParam Long aventureiroId,
-                            @RequestParam Integer pontos);
+    RankingResponse pontuar(
+            @RequestParam("aventureiroId") Long aventureiroId,
+            @RequestParam("pontos") Integer pontos
+    );
 }

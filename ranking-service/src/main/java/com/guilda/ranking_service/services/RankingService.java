@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,23 +48,29 @@ public class RankingService {
     }
 
     public List<RankingAventureiroDTO> listarRankingCompleto() {
-        List<RankingEntryModel> entries = rankingRepository.findAllByOrderByPontosDesc();
+        List<AventureiroResponse> aventureiros = guildaClient.listarTodos();
+
+        List<RankingEntryModel> entries = rankingRepository.findAll();
+        Map<Long, RankingEntryModel> rankingMap = entries.stream()
+                .collect(Collectors.toMap(RankingEntryModel::getAventureiroId, e -> e));
+
+        // Monta a lista completa
         List<RankingAventureiroDTO> resultado = new ArrayList<>();
-
-        for (int i = 0; i < entries.size(); i++) {
-            RankingEntryModel entry = entries.get(i);
-            AventureiroResponse aventureiro = guildaClient.buscarAventureiro(entry.getAventureiroId());
-
+        for (AventureiroResponse aventureiro : aventureiros) {
+            RankingEntryModel entry = rankingMap.get(aventureiro.getId());
             RankingAventureiroDTO dto = new RankingAventureiroDTO();
-            dto.setPosicao(i + 1);
-            dto.setAventureiroId(entry.getAventureiroId());
+            dto.setAventureiroId(aventureiro.getId());
             dto.setNomeAventureiro(aventureiro.getNome());
             dto.setClasse(aventureiro.getClasse());
             dto.setNivel(aventureiro.getNivel());
-            dto.setPontos(entry.getPontos());
-            dto.setMissoesConcluidas(entry.getMissoesConcluidas());
-
+            dto.setPontos(entry != null ? entry.getPontos() : 0);
+            dto.setMissoesConcluidas(entry != null ? entry.getMissoesConcluidas() : 0);
             resultado.add(dto);
+        }
+
+        resultado.sort((a, b) -> b.getPontos() - a.getPontos());
+        for (int i = 0; i < resultado.size(); i++) {
+            resultado.get(i).setPosicao(i + 1);
         }
 
         return resultado;
