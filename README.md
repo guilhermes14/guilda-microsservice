@@ -17,7 +17,7 @@
 
 - **ranking-service** foi escolhido como microserviço novo pois se integra naturalmente ao domínio de missões
 - **Pontuação por nível de perigo**: BAIXO=10, MEDIO=25, ALTO=50, EXTREMO=100
-- **Banco do professor** roda fora do compose pois já vem com dados pré-populados
+- **Banco de dados** roda fora do compose pois já vem com dados pré-populados
 - **host.docker.internal** usado para o guilda-app (container) acessar o banco externo (host)
 
 ## Pré-requisitos
@@ -28,7 +28,7 @@
 
 ## Como Rodar
 
-### 1. Sobe o banco do professor
+### 1. Sobe o banco 
 
 ```bash
 docker run -d -p 5433:5432 --name postgres-guilda leogloriainfnet/postgres-tp2-spring:2.0-win
