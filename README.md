@@ -106,7 +106,7 @@ Use `docker compose restart ranking-service` em vez de `docker compose down` par
 **Porta 5432 já em uso:**
 Verifique se há um PostgreSQL nativo rodando no Windows e pare o serviço antes de subir o Docker.
 
-##Graylog mostrando logs centralizados
+## Graylog mostrando logs centralizados
 
 <img width="1172" height="937" alt="image" src="https://github.com/user-attachments/assets/3fc2783c-2d17-4016-a1db-c5a4b128eeb2" />
 
