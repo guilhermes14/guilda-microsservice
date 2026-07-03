@@ -12,6 +12,41 @@ services:
     volumes:
       - ranking-data:/var/lib/postgresql/data
 
+  mongo:
+    image: mongo:6
+    volumes:
+      - mongo-data:/data/db
+
+  opensearch:
+    image: opensearchproject/opensearch:2.11.0
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+  graylog:
+    image: graylog/graylog:5.2
+    environment:
+      - GRAYLOG_PASSWORD_SECRET=somepasswordpepper12345
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://opensearch:9200
+      - GRAYLOG_MONGODB_URI=mongodb://mongo:27017/graylog
+    ports:
+      - "9000:9000"
+      - "12201:12201/udp"
+    depends_on:
+      - mongo
+      - opensearch
+
   eureka-server:
     build: ./eureka-server
     ports:
@@ -36,6 +71,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres123
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CLOUD_CONFIG_ENABLED: false
+      GRAYLOG_HOST: graylog
+      APP_NAME: guilda-app
     depends_on:
       - eureka-server
 
@@ -49,6 +86,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ranking123
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CLOUD_CONFIG_ENABLED: false
+      GRAYLOG_HOST: graylog
+      APP_NAME: ranking-service
     depends_on:
       - postgres-ranking
       - eureka-server
@@ -65,3 +104,5 @@ services:
 
 volumes:
   ranking-data:
+  mongo-data:
+  opensearch-data:
